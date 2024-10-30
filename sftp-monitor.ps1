@@ -1,3 +1,9 @@
+# Function to handle Ctrl+C signal (SIGINT)
+Register-EngineEvent -SourceIdentifier ConsoleCancelEvent -Action {
+  Write-Log "Ctrl+C detected. Exiting script..."
+  $global:keepRunning = $false
+}
+
 # Import the CredentialManager module
 Import-Module CredentialManager
 
@@ -200,14 +206,10 @@ function Download-FileWithRetry {
     return $false
 }
 
-# Function to handle Ctrl+C signal (SIGINT)
-Register-EngineEvent -SourceIdentifier ConsoleCancelEvent -Action {
-  Write-Log "Ctrl+C detected. Exiting script..."
-  $global:keepRunning = $false
-}
-
 # Main download loop with reconnect logic
 $connectionRetries = 0
+$keepRunning = $true
+
 while ($keepRunning) {
     try {
     # Connect to the SFTP server

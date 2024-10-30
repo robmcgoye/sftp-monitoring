@@ -65,7 +65,7 @@ The script reads configuration values from `config.json` in the same directory a
 2. Place `config.json` in the same directory as the script.
 3. Run the script in PowerShell:
     ```powershell
-    .\YourScriptName.ps1
+    .\sftp-monitoring.ps1
     ```
 
 ## Logging and Archiving

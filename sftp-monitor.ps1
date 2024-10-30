@@ -188,15 +188,11 @@ function Download-FileWithRetry {
             # Log the error message and additional details if available
             $errorMessage = $_.Exception.Message           # Get the error message
             $errorCode = $_.Exception.HResult              # Get the error code, if available
-            $errorCategory = $_.CategoryInfo.Category      # Get the error category
-            $errorTarget = $_.TargetObject                 # Get the target object that caused the error
 
-            Write-Log "An error occurred: $errorMessage"
-            Write-Log "Error code: $errorCode"
-            Write-Log "Error category: $errorCategory"
-            Write-Log "Error target: $errorTarget"
+            Write-Log "An error occurred: $errorMessage" -type "Error"
+            Write-Log "Error code: $errorCode" -type "Error"
             $fileRetryCount++
-            Write-Log "Failed to download file $($remoteFilePath). Attempt $fileRetryCount of $maxFileRetries." -type "Error"
+            Write-Log "Error with file $($remoteFilePath). Attempt $fileRetryCount of $maxFileRetries." -type "Error"
             Start-Sleep -Seconds $retryInterval
         }
     } while ($fileRetryCount -lt $maxFileRetries)
@@ -237,14 +233,10 @@ while ($keepRunning) {
     # Log the error message and additional details if available
     $errorMessage = $_.Exception.Message           # Get the error message
     $errorCode = $_.Exception.HResult              # Get the error code, if available
-    $errorCategory = $_.CategoryInfo.Category      # Get the error category
-    $errorTarget = $_.TargetObject                 # Get the target object that caused the error
 
-    Write-Log "An error occurred: $errorMessage"
-    Write-Log "Error code: $errorCode"
-    Write-Log "Error category: $errorCategory"
-    Write-Log "Error target: $errorTarget"
-    Write-Log "Connection lost. Attempting to reconnect... (Attempt $($connectionRetries+1) of $maxConnectionRetries)" -type "Error"
+    Write-Log "An error occurred: $errorMessage" -type "Error"
+    Write-Log "Error code: $errorCode" -type "Error"
+    Write-Log "(Retry Attempt $($connectionRetries+1) of $maxConnectionRetries)" -type "Error"
     $connectionRetries++
     Start-Sleep -Seconds $retryInterval
 

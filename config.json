@@ -1,0 +1,11 @@
+{
+  "HostName": "sftp.yourserver.com",
+  "RemoteDirectory": "/remote/path/to/files/",
+  "LocalDirectory": "C:\\local\\download\\path\\",
+  "WinSCPDllPath": "C:\\path\\to\\WinSCPnet.dll",
+  "CredentialName": "SFTP-Cred",
+  "Fingerprint": "ssh-rsa 2048 xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx",
+  "LogFileSizeLimitMB": 1048576,  
+  "MaxLogArchives": 5,
+  "PollingInterval": 15
+}

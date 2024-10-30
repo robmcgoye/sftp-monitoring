@@ -96,7 +96,7 @@ if ($logFileSizeLimitMB -le 0) {
   $logFileSizeLimitMB = 5
 }
 if ($maxLogArchives -le 0) {
-  Write-Log "Invalid MaxLogArchives in config. Setting to default of 5."
+  Write-Log "Invalid MaxLogArchives in config. Setting to default of 3."
   $maxLogArchives = 3
 }
 

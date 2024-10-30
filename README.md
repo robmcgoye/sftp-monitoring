@@ -22,6 +22,7 @@ The script reads configuration values from `config.json` in the same directory a
 ```json
 {
     "HostName": "sftp.example.com",
+    "HostPort": 22, 
     "RemoteDirectory": "/remote/path/",
     "LocalDirectory": "C:\\local\\path\\",
     "WinSCPDllPath": "C:\\path\\to\\WinSCPnet.dll",
@@ -33,6 +34,7 @@ The script reads configuration values from `config.json` in the same directory a
 }
 ```
 - **HostName**: The SFTP server’s hostname or IP address.
+- **HostPort**: The SFTP server's port
 - **RemoteDirectory**: Directory on the SFTP server to monitor.
 - **LocalDirectory**: Directory on the local system to download files to.
 - **WinSCPDllPath**: Path to the winSCPnet.dll (part of .NET assembly / COM library)

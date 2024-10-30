@@ -43,7 +43,7 @@ The script reads configuration values from `config.json` in the same directory a
 - **PollingInterval**: Time in seconds between each check for new files on the remote server.
 
 ## Script Features
-1. **File Monitoring**: Continuously monitors the specified remote directory for new files at intervals defined by ==PollingInterval==.
+1. **File Monitoring**: Continuously monitors the specified remote directory for new files at intervals defined by `PollingInterval`.
 2. **File Downloading**: Downloads files from the remote directory to the specified local directory. It will try a max of 3 times to download the file with a 10 second delay between each attempt. (However on the next query to the sftp server it will continue to try to get this file until it is downloaded or deleted.) 
 3. **Remote Deletion After Verification**:
    - After downloading, waits 2 seconds and checks if the file still exists on the remote server.
@@ -58,11 +58,11 @@ The script reads configuration values from `config.json` in the same directory a
   $credential = Get-Credential -Message "Enter your credentials"
   $credential | New-StoredCredential -Target $credentialName -Persist LocalMachine
   ```
-2. Set the ==CredentialName== in ==config.json== to match the ==Target== name (e.g., =="SftpCredential"==).
+2. Set the `CredentialName` in `config.json` to match the `Target` name (e.g., `"SftpCredential"`).
 
 ## Running the Script
-1. Ensure ==WinSCPnet.dll== is accessible by the script.
-2. Place ==config.json== in the same directory as the script.
+1. Ensure `WinSCPnet.dll` is accessible by the script.
+2. Place `config.json` in the same directory as the script.
 3. Run the script in PowerShell:
     ```powershell
     .\YourScriptName.ps1
@@ -70,8 +70,8 @@ The script reads configuration values from `config.json` in the same directory a
 
 ## Logging and Archiving
 - The script creates a log file in the same directory as the script.
-- When the log file reaches the size specified in ==LogFileSizeLimitMB==, it archives the current log and creates a new one.
-- Only the specified number of archived logs (==MaxLogArchives==) are kept.
+- When the log file reaches the size specified in `LogFileSizeLimitMB`, it archives the current log and creates a new one.
+- Only the specified number of archived logs (`MaxLogArchives`) are kept.
 
 ## Running as a Windows Service (Optional)
 To run this script as a Windows service:
@@ -80,9 +80,9 @@ To run this script as a Windows service:
 2. Configure the service with appropriate permissions and startup settings.
 
 ## Troubleshooting
-- **Unable to connect**: Check if WinSCP is installed correctly and that ==WinSCPnet.dll== is in the expected path.
+- **Unable to connect**: Check if WinSCP is installed correctly and that `WinSCPnet.dll` is in the expected path.
 - **Log file errors**: Ensure the script has write permissions for the log file directory.
-- **Credential issues**: Verify that the credential name in ==config.json== matches the stored name in Credential Manager.
+- **Credential issues**: Verify that the credential name in `config.json` matches the stored name in Credential Manager.
 - **Finding the SSH Host Key Fingerprint**:
   - To find the SSH host key fingerprint of your SFTP server, you can use the WinSCP GUI:
     1. Open WinSCP and enter your SFTP server details.
@@ -93,6 +93,6 @@ To run this script as a Windows service:
       ssh-keygen -l -f /etc/ssh/ssh_host_rsa_key.pub
 
       ```
-    5. Copy the displayed fingerprint and add it to your ==config.json== under the Fingerprint key.
+    5. Copy the displayed fingerprint and add it to your `config.json` under the Fingerprint key.
 ---
 This script is intended for automated file monitoring and downloading over SFTP with a focus on reliable error handling and file management. Adjust the configuration options as needed for your environment.

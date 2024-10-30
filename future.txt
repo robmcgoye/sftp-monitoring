@@ -1,6 +1,0 @@
-- **Port**: SFTP port (default is 22).
-add port option to the config.json?
-
-$retryInterval = 10  # Time in seconds to wait before retrying a failed file download
-$maxConnectionRetries = 5  # Maximum attempts to reconnect
-$maxFileRetries = 3

@@ -13,6 +13,13 @@ $configFilePath = Join-Path $scriptDir "Config.json"
 
 # Load configuration from JSON file
 $config = Get-Content -Path $configFilePath | ConvertFrom-Json
+try {
+  $config = Get-Content -Path $configFilePath | ConvertFrom-Json
+}
+catch {
+  Write-Log "Failed to load config.json: $_"
+  throw
+}
 
 # Define configuration variables from config file
 $hostName = $config.HostName
@@ -21,13 +28,15 @@ $localDirectory = $config.LocalDirectory
 $winSCPDllPath = $config.WinSCPDllPath
 $credentialName = $config.CredentialName
 $fingerprint = $config.Fingerprint
-$pollingInterval = [int]$config.PollingInterval
-$logFileSizeLimitMB = [int]$config.LogFileSizeLimitMB
-$maxLogArchives = [int]$config.MaxLogArchives
-
+[int]$pollingInterval = 0
+[int]$logFileSizeLimitMB = 0
+[int]$maxLogArchives = 0
+[int]$hostPort = 0
 
 # Define log file path in the same directory as the script
-$logFile = Join-Path $scriptDir "sftp-transfer.log"
+$scriptName = [System.IO.Path]::GetFileNameWithoutExtension($MyInvocation.MyCommand.Name)
+
+$logFile = Join-Path $scriptDir "$scriptName.log"
 
 function New-Log {
   param (
@@ -88,14 +97,37 @@ function Archive-LogFile {
   }
 }
 
+# Validation function
+function Validate-ConfigValue {
+  param (
+      [string]$Value,
+      [string]$Name
+  )
+  if ([string]::IsNullOrWhiteSpace($Value)) {
+      Write-Log "Error: The configuration value for '$Name' is missing or empty."
+      throw "The configuration value for '$Name' is required but was not provided."
+  }
+}
+
 New-Log -logFilePath $logFile
 
+# Validate HostName, RemoteDirectory, and Fingerprint
+Validate-ConfigValue -Value $hostName -Name "HostName"
+Validate-ConfigValue -Value $remoteDirectory -Name "RemoteDirectory"
+Validate-ConfigValue -Value $fingerprint -Name "Fingerprint"
+
+# Validate the port number; if invalid, use the default port 22
+if (-not [int]::TryParse($config.HostPort, [ref]$hostPort) -or $hostPort -lt 1 -or $hostPort -gt 65535) {
+  Write-Log "Invalid or missing port number in config. Defaulting to port 22."
+  $hostPort = 22
+}
+
 # Validate that LogFileSizeLimitMB is a positive integer
-if ($logFileSizeLimitMB -le 0) {
+if (-not [int]::TryParse($config.LogFileSizeLimitMB, [ref]$logFileSizeLimitMB) -or $logFileSizeLimitMB -le 0) {
   Write-Log "Invalid LogFileSizeLimitMB in config. Setting to default of 5 MB."
   $logFileSizeLimitMB = 5
 }
-if ($maxLogArchives -le 0) {
+if (-not [int]::TryParse($config.MaxLogArchives, [ref]$maxLogArchives) -or $maxLogArchives -le 0) {
   Write-Log "Invalid MaxLogArchives in config. Setting to default of 3."
   $maxLogArchives = 3
 }
@@ -107,7 +139,7 @@ if (!(Get-Module -ListAvailable -Name CredentialManager)) {
 }
 
 # Validate that PollingInterval is a positive integer
-if ($pollingInterval -le 0) {
+if (-not [int]::TryParse($config.PollingInterval, [ref]$pollingInterval) -or $pollingInterval -le 0) {
   Write-Log "Invalid PollingInterval in config. Setting to default of 30 seconds."
   $pollingInterval = 30
 }
@@ -121,16 +153,17 @@ if (!(Test-Path -Path $winSCPDllPath)) {
     Write-Log "WinSCP DLL found at $winSCPDllPath."
 }
 
-if (!(Test-Path -Path $localDirectory)) {
-    Write-Log "Warning: Local directory $localDirectory does not exist. Creating it..." -type "Warning"
-    New-Item -ItemType Directory -Path $localDirectory -Force | Out-Null
-} else {
-    Write-Log "Local directory $localDirectory exists."
-}
 # Ensure LocalDirectory ends with a backslash
 if (-not $localDirectory.EndsWith("\")) {
   Write-Log "LocalDirectory path does not end with a backslash. Adding a backslash."
   $localDirectory = $localDirectory + "\"
+}
+
+if (!(Test-Path -Path $localDirectory)) {
+  Write-Log "Warning: Local directory $localDirectory does not exist. Creating it..." -type "Warning"
+  New-Item -ItemType Directory -Path $localDirectory -Force | Out-Null
+} else {
+  Write-Log "Local directory $localDirectory exists."
 }
 
 # Check if the credential exists
@@ -144,6 +177,7 @@ if ($null -eq $credential) {
 $sessionOptions = New-Object WinSCP.SessionOptions
 $sessionOptions.Protocol = [WinSCP.Protocol]::Sftp
 $sessionOptions.HostName = $hostName
+$sessionOptions.PortNumber = $hostPort
 $sessionOptions.UserName = $credential.UserName
 $sessionOptions.Password = $credential.GetNetworkCredential().Password
 $sessionOptions.SshHostKeyFingerprint = $fingerprint

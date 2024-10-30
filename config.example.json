@@ -1,5 +1,6 @@
 {
   "HostName": "sftp.yourserver.com",
+  "HostPort": 22, 
   "RemoteDirectory": "/remote/path/to/files/",
   "LocalDirectory": "C:\\local\\download\\path\\",
   "WinSCPDllPath": "C:\\path\\to\\WinSCPnet.dll",
